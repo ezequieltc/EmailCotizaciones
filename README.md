@@ -12,7 +12,7 @@ El programa posee una interface gráfica muy sencilla realizada con PyQt5.
 
 ![image](https://user-images.githubusercontent.com/94491753/167318443-a9429f0c-bb2c-49db-8822-87722ade018b.png)
 
-En la misma que puede ingresar el RFQ (número de pedido), el servicio donde va a estar operando el equipo, a que pais y que destinatarios (motores, sellos, acoples) deseo enviar el email. En el cuerpo del email se ingresa el texto que se desea enviar en el email.
+En la misma que puede ingresar el RFQ (número de pedido), el servicio donde va a estar operando el equipo, a que pais y que destinatarios (motores, sellos, acoples) deseo enviar el email. En el campo "Cuerpo" se ingresa el texto que se desea enviar como cuerpo del email.
 
 Activando la casilla de "Adjuntar Archivos" se activa la opción "Elegir Archivos" que despliega un cuadro de dialogos para navegar a la ubicacion del o los archivos que se desean adjuntar
 
