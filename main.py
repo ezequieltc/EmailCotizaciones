@@ -3,6 +3,8 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtWidgets import *
 import sys
 import sqlite3
+from Enviaremails import EnviarEmail
+from ventanaAgregarProveedor import Ui_AgregarProveedor
 
 
 class Ui_MainWindow(QMainWindow):
@@ -32,6 +34,7 @@ class Ui_MainWindow(QMainWindow):
         self.CuerpocomboBox = QtWidgets.QComboBox(self.centralwidget)
         self.CuerpocomboBox.setGeometry(QtCore.QRect(30, 150, 111, 22))
         self.CuerpocomboBox.setObjectName("CuerpocomboBox")
+        self.CuerpocomboBox.setEnabled(False)
         self.CuerpocomboBox.addItem("")
         self.CuerpocomboBox.addItem("")
         self.CuerpocomboBox.addItem("")
@@ -64,6 +67,7 @@ class Ui_MainWindow(QMainWindow):
         self.PaisLabel.setObjectName("PaisLabel")
         self.PaisComboBox = QtWidgets.QComboBox(self.centralwidget)
         self.PaisComboBox.setGeometry(QtCore.QRect(30, 200, 111, 22))
+        self.PaisComboBox.setEnabled(False)
         self.PaisComboBox.setObjectName("PaisComboBox")
         self.PaisComboBox.addItem("")
         self.PaisComboBox.addItem("")
@@ -136,8 +140,11 @@ class Ui_MainWindow(QMainWindow):
         self.actionSalir.setObjectName("actionSalir")
         self.actionOpciones = QtWidgets.QAction(MainWindow)
         self.actionOpciones.setObjectName("actionOpciones")
+        self.actionProveedor = QtWidgets.QAction(MainWindow)
+        self.actionProveedor.setObjectName("actionProveedor")
         self.menuArchivo.addAction(self.actionSalir)
         self.menuConfiguracion.addAction(self.actionOpciones)
+        self.menuConfiguracion.addAction(self.actionProveedor)
         self.menubar.addAction(self.menuArchivo.menuAction())
         self.menubar.addAction(self.menuConfiguracion.menuAction())
 
@@ -201,6 +208,8 @@ class Ui_MainWindow(QMainWindow):
             _translate("MainWindow", "Configuracion"))
         self.actionSalir.setText(_translate("MainWindow", "Salir"))
         self.actionOpciones.setText(_translate("MainWindow", "Opciones"))
+        self.actionProveedor.setText(
+            _translate("MainWindow", "Agregar Proveedor"))
 
     def checkbox(self, state):
         if QtCore.Qt.Checked == state:
@@ -215,49 +224,85 @@ class Ui_MainWindow(QMainWindow):
             self.EliminarPushButton.setEnabled(False)
 
     def openFileNamesDialog(self):
-        global files
         options = QFileDialog.Options()
         # options |= QFileDialog.DontUseNativeDialog
-        files, _ = QFileDialog.getOpenFileNames(
+        self.files, _ = QFileDialog.getOpenFileNames(
             MainWindow, "QFileDialog.getOpenFileNames()", "", "All Files (*);;Python Files (*.py)", options=options)
-        if files:
-            print(files)
-            self.archivos = "\n".join(files)
+        if self.files:
+            print(self.files)
+            self.archivos = "\n".join(self.files)
         self.textBrowser.setText(self.archivos)
-        print(self.archivos)
+        print(self.files)
 
     def eliminarAjuntos(self):
         self.textBrowser.setText("")
         self.archivos = ""
-        print(self.archivos)
 
     def enviar(self):
         conn = sqlite3.connect('database.db')
         with conn:
             c = conn.cursor()
-            c.execute("SELECT * FROM proveedores WHERE destinatarios= :destinatarios AND pais=:pais",
-                      {'destinatarios': self.destino, 'pais': self.paisdest})
+            # Desactivado por ahora
+            # c.execute("SELECT * FROM proveedores WHERE destinatarios= :destinatarios AND pais=:pais",
+            #           {'destinatarios': self.destino, 'pais': self.paisdest})
+            c.execute("SELECT * FROM proveedores WHERE destinatarios= :destinatarios",
+                      {'destinatarios': self.destino})
             resultado = c.fetchall()
-        print(resultado)
-        # print(self.archivos)
+        for item in resultado:
+            empresa = item[3]
+            tipo = item[5]
+            rfq = self.RFQlineEdit.text()
+            coti = self.CotComboBox.currentText()
+            servicio = self.ServiciolineEdit.text()
+            propuesta = f'RFQ {rfq} | {servicio}  | {coti} | {tipo} | {empresa}'
+            destino = item[2]
+            cuerpo = f'Estimado {item[0]}' + '\n' + \
+                self.CueproPlainTextEdit.toPlainText()
+            email = EnviarEmail(destino, cuerpo, propuesta, self.files)
+            email.enviar()
+            print(cuerpo)
 
-        # print(self.cuerpo)
-        print(self.destino)
-        print(self.paisdest)
+            print(propuesta)
 
-    def texto(self, text):
-        if text == 'Estandar Español':
-            self.cuerpo = "Este es el texto en español papa"
-        elif text == "Estandar Ingles":
-            self.cuerpo = "This is a texto en ingles"
-        # print(text)
+    def ventanaproveedores(self):
+        def agregarProv():
+            nombre, apellido, email, empresa = self.ui.lineEditNombre.text(
+            ), self.ui.lineEditApellido.text(), self.ui.lineEditEmail.text(), self.ui.lineEditEmpresa.text()
+            pais = self.ui.comboBoxPais.currentText()
+            tipo = self.ui.comboBoxTipo.currentText()
+            conn = sqlite3.connect('database.db')
+            with conn:
+                c = conn.cursor()
+                c.execute("INSERT INTO proveedores VALUES (:nombre, :apellido,:email,:empresa,:pais,:destinatarios)", {
+                          'nombre': nombre, 'apellido': apellido, 'email': email, 'empresa': empresa, 'pais': pais, 'destinatarios': tipo})
+                conn.commit()
+            print(nombre, apellido, email, empresa, pais, tipo)
+
+        def cancelar():
+            self.window.close()
+
+        self.window = QtWidgets.QMainWindow()
+        self.ui = Ui_AgregarProveedor()
+        self.ui.setupUi(self.window)
+        self.ui.pushButtonAgregar.clicked.connect(agregarProv)
+        self.ui.pushButtonCancelar.clicked.connect(cancelar)
+
+        self.window.show()
+
+    # Desactivado por ahora
+    # def texto(self, text):
+    #     if text == 'Estandar Español':
+    #         self.cuerpo = "Este es el texto en español papa"
+    #     elif text == "Estandar Ingles":
+    #         self.cuerpo = "This is a texto en ingles"
+    #     # print(text)
 
     def destinos(self, text):
         self.destino = text
-        # print(text)
 
-    def pais(self, text):
-        self.paisdest = text
+    # Desactivado por ahora
+    # def pais(self, text):
+    #     self.paisdest = text
 
 
 if __name__ == "__main__":
@@ -271,7 +316,8 @@ if __name__ == "__main__":
     ui.AdjuntarArchivosPushButton.clicked.connect(ui.openFileNamesDialog)
     ui.EliminarPushButton.clicked.connect(ui.eliminarAjuntos)
     ui.EnviarpushButton.clicked.connect(ui.enviar)
-    ui.CuerpocomboBox.activated[str].connect(ui.texto)
-    ui.PaisComboBox.activated[str].connect(ui.pais)
+    # ui.CuerpocomboBox.activated[str].connect(ui.texto)
+    # ui.PaisComboBox.activated[str].connect(ui.pais)
     ui.DestinatariocomboBox.activated[str].connect(ui.destinos)
+    ui.actionProveedor.triggered.connect(ui.ventanaproveedores)
     sys.exit(app.exec_())
