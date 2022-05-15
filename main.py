@@ -5,6 +5,7 @@ import sys
 import sqlite3
 from Enviaremails import EnviarEmail
 from ventanaAgregarProveedor import Ui_AgregarProveedor
+from ventanaEditarProveedor import Ui_EditarProveedor
 
 
 class Ui_MainWindow(QMainWindow):
@@ -142,9 +143,12 @@ class Ui_MainWindow(QMainWindow):
         self.actionOpciones.setObjectName("actionOpciones")
         self.actionProveedor = QtWidgets.QAction(MainWindow)
         self.actionProveedor.setObjectName("actionProveedor")
+        self.actionEditarProveedor = QtWidgets.QAction(MainWindow)
+        self.actionEditarProveedor.setObjectName("actionEditarProveedor")
         self.menuArchivo.addAction(self.actionSalir)
         self.menuConfiguracion.addAction(self.actionOpciones)
         self.menuConfiguracion.addAction(self.actionProveedor)
+        self.menuConfiguracion.addAction(self.actionEditarProveedor)
         self.menubar.addAction(self.menuArchivo.menuAction())
         self.menubar.addAction(self.menuConfiguracion.menuAction())
 
@@ -210,6 +214,8 @@ class Ui_MainWindow(QMainWindow):
         self.actionOpciones.setText(_translate("MainWindow", "Opciones"))
         self.actionProveedor.setText(
             _translate("MainWindow", "Agregar Proveedor"))
+        self.actionEditarProveedor.setText(
+            _translate("MainWindow", "Editar Proveedor"))
 
     def checkbox(self, state):
         if QtCore.Qt.Checked == state:
@@ -289,6 +295,77 @@ class Ui_MainWindow(QMainWindow):
 
         self.window.show()
 
+    def ventanaEditarProv(self):
+        def filtrar(text):
+            conn = sqlite3.connect('database.db')
+            with conn:
+                c = conn.cursor()
+                c.execute("SELECT * FROM proveedores WHERE destinatarios= :destinatarios",
+                          {'destinatarios': text})
+                resultado = c.fetchall()
+            fila = 0
+            self.ui.tableWidget.setRowCount(len(resultado))
+            for proveedor in resultado:
+                posicion = 0
+                for item in proveedor:
+                    self.ui.tableWidget.setItem(
+                        fila, posicion, QtWidgets.QTableWidgetItem(item))
+                    posicion += 1
+                self.ui.tableWidget.setItem(
+                    fila, 0, QtWidgets.QTableWidgetItem(proveedor[0]))
+                fila += 1
+
+        def elegirItem():
+            indicepaises = {'Argentina': 1, 'Mexico': 2}
+            indicetipo = {'Motores': 1, 'Sellos': 2, 'Acoples': 3}
+            item = self.ui.tableWidget.currentRow()
+            conn = sqlite3.connect('database.db')
+            text = self.ui.comboBoxFiltro.currentText()
+            with conn:
+                c = conn.cursor()
+                c.execute("SELECT * FROM proveedores WHERE destinatarios= :destinatarios",
+                          {'destinatarios': text})
+                resultado = c.fetchall()
+                c.execute("SELECT rowid, * FROM proveedores WHERE destinatarios= :destinatarios",
+                          {'destinatarios': text})
+                rowid = c.fetchall()
+            rowids, nombre, apellido, email, empresa, pais, tipo = rowid[item][0], resultado[item][0], resultado[
+                item][1], resultado[item][2], resultado[item][3], resultado[item][4], resultado[item][5]
+            self.ui.lineEditNombre.setText(nombre)
+            self.ui.lineEditApellido.setText(apellido)
+            self.ui.lineEditEmail.setText(email)
+            self.ui.lineEditEmpresa.setText(empresa)
+            self.ui.comboBoxPais.setCurrentIndex(indicepaises[pais])
+            self.ui.comboBoxTipo.setCurrentIndex(indicetipo[tipo])
+            print(nombre, apellido, email, empresa, tipo, pais)
+            rowids = str(rowids)
+            self.ui.labelProveedorID.setText(rowids)
+            print(rowids)
+
+        def actualizar():
+            conn = sqlite3.connect('database.db')
+            row = self.ui.labelProveedorID.text()
+            with conn:
+                c = conn.cursor()
+                c.execute("SELECT * FROM proveedores WHERE rowid= :rowid",
+                          {'rowid': row})
+                resultado = c.fetchall()
+            print(resultado)
+            pass
+
+        def cancelar():
+            self.window.close()
+
+        self.window = QtWidgets.QMainWindow()
+        self.ui = Ui_EditarProveedor()
+        self.ui.setupUi(self.window)
+        self.ui.comboBoxFiltro.activated[str].connect(filtrar)
+        self.ui.pushButtonActualizar.clicked.connect(actualizar)
+        self.ui.tableWidget.clicked.connect(elegirItem)
+        self.ui.pushButtonCancelar.clicked.connect(cancelar)
+
+        self.window.show()
+
     # Desactivado por ahora
     # def texto(self, text):
     #     if text == 'Estandar Español':
@@ -320,4 +397,5 @@ if __name__ == "__main__":
     # ui.PaisComboBox.activated[str].connect(ui.pais)
     ui.DestinatariocomboBox.activated[str].connect(ui.destinos)
     ui.actionProveedor.triggered.connect(ui.ventanaproveedores)
+    ui.actionEditarProveedor.triggered.connect(ui.ventanaEditarProv)
     sys.exit(app.exec_())
