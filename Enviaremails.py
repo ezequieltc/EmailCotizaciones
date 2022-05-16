@@ -1,4 +1,5 @@
 import smtplib
+import json
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from email.mime.base import MIMEBase
@@ -7,36 +8,45 @@ import os
 import codecs
 ahora = os.getcwd()
 os.chdir(ahora)
+
+
 class EnviarEmail:
-    
-    def __init__(self,receiver,body,propuesta,path, noadjuntar = False, sender = "ezequielcappello@gmail.com", password = "Eze13975"):
-        self.sender = sender
+
+    def __init__(self, receiver, body, propuesta, path, noadjuntar=False):
+        directorio = os.getcwd() + "\Data\configuracion.json"
+        with open(directorio, 'r') as f:
+            data = json.loads(f.read())
+        self.sender = data['usuario']
         self.reciever = receiver
         # self.reciever = ','.join(receiver)
-        self.password = password
+        self.password = data['contrasena']
+        self.servidor = data['servidor']
+        self.puerto = data['puerto']
         self.body = body
         self.propuesta = propuesta
         self.noadjuntar = noadjuntar
         self.path = path
 
-    def adjuntar(self,pdfname,message):
-        for file in pdfname:  
+    def adjuntar(self, pdfname, message):
+        for file in pdfname:
             binary_pdf = open(file, 'rb')
             nombre = os.path.basename(file)
             payload = MIMEBase('application', 'octate-stream', Name=nombre)
             payload.set_payload((binary_pdf).read())
             encoders.encode_base64(payload)
-            payload.add_header('Content-Decomposition', 'attachment', filename= nombre)
+            payload.add_header('Content-Decomposition',
+                               'attachment', filename=nombre)
             message.attach(payload)
 
     def enviar(self):
-        with codecs.open(ahora + '\\Data\\firma.html',"r", "utf-8") as f:
+        with codecs.open(ahora + '\\Data\\firma.html', "r", "utf-8") as f:
             firma = f.read()
-        session = smtplib.SMTP('smtp.gmail.com', 587)
-        #Inicio la conexion
+        # session = smtplib.SMTP('smtp.gmail.com', 587)
+        session = smtplib.SMTP(self.servidor, self.puerto)
+        # Inicio la conexion
         session.starttls()
         try:
-            #Me conecto con las credenciales
+            # Me conecto con las credenciales
             session.login(self.sender, self.password)
         except:
             print('El email o la contraseña no son correctos.')
@@ -49,8 +59,8 @@ class EnviarEmail:
 
         if self.noadjuntar == False:
             pdfname = self.path
-            self.adjuntar(pdfname,message)
-        #Envio el email
+            self.adjuntar(pdfname, message)
+        # Envio el email
 
         text = message.as_string()
         session.sendmail(self.sender, self.reciever, text)

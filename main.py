@@ -2,10 +2,13 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtWidgets import *
 import sys
+import os
+import json
 import sqlite3
 from Enviaremails import EnviarEmail
 from ventanaAgregarProveedor import Ui_AgregarProveedor
 from ventanaEditarProveedor import Ui_EditarProveedor
+from ventanaOpciones import Ui_VentanaOpciones
 
 
 class Ui_MainWindow(QMainWindow):
@@ -366,6 +369,51 @@ class Ui_MainWindow(QMainWindow):
 
         self.window.show()
 
+    def ventanaOpciones(self):
+        def guardar():
+            data = {"usuario": self.ui.lineEditEmailUsuario.text(),
+                    "contrasena": self.ui.lineEditContrasena.text(),
+                    "servidor": self.ui.lineEditServidor.text(),
+                    "puerto": self.ui.lineEditPuerto.text()}
+            directorio = os.getcwd() + "\Data\configuracion.json"
+            with open(directorio, 'w') as f:
+                json.dump(data, f)
+            self.window.close()
+
+        def cambiarserver():
+            if self.ui.lineEditServidor.isEnabled():
+                self.ui.lineEditServidor.setEnabled(False)
+                self.ui.lineEditPuerto.setEnabled(False)
+            else:
+                self.ui.lineEditServidor.setEnabled(True)
+                self.ui.lineEditPuerto.setEnabled(True)
+
+        def mostrarpass():
+            if self.ui.lineEditContrasena.echoMode() == QLineEdit.Password:
+                self.ui.lineEditContrasena.setEchoMode(QLineEdit.Normal)
+            else:
+                self.ui.lineEditContrasena.setEchoMode(QLineEdit.Password)
+
+        def cancelar():
+            self.window.close()
+
+        directorio = os.getcwd() + "\Data\configuracion.json"
+        with open(directorio, 'r') as f:
+            data = json.loads(f.read())
+        self.window = QtWidgets.QMainWindow()
+        self.ui = Ui_VentanaOpciones()
+        self.ui.setupUi(self.window)
+        self.ui.pushButtonCancelar.clicked.connect(cancelar)
+        self.ui.lineEditEmailUsuario.setText(data['usuario'])
+        self.ui.lineEditContrasena.setText(data['contrasena'])
+        self.ui.lineEditServidor.setText(data['servidor'])
+        self.ui.lineEditPuerto.setText(data['puerto'])
+        self.ui.checkBoxContrasena.stateChanged.connect(mostrarpass)
+        self.ui.checkBoxServidor.stateChanged.connect(cambiarserver)
+        self.ui.pushButtonGuardar.clicked.connect(guardar)
+
+        self.window.show()
+
     # Desactivado por ahora
     # def texto(self, text):
     #     if text == 'Estandar Español':
@@ -398,4 +446,5 @@ if __name__ == "__main__":
     ui.DestinatariocomboBox.activated[str].connect(ui.destinos)
     ui.actionProveedor.triggered.connect(ui.ventanaproveedores)
     ui.actionEditarProveedor.triggered.connect(ui.ventanaEditarProv)
+    ui.actionOpciones.triggered.connect(ui.ventanaOpciones)
     sys.exit(app.exec_())
