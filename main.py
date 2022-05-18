@@ -286,6 +286,12 @@ class Ui_MainWindow(QMainWindow):
                           'nombre': nombre, 'apellido': apellido, 'email': email, 'empresa': empresa, 'pais': pais, 'destinatarios': tipo})
                 conn.commit()
             print(nombre, apellido, email, empresa, pais, tipo)
+            self.ui.lineEditNombre.clear()
+            self.ui.lineEditApellido.clear()
+            self.ui.lineEditEmail.clear()
+            self.ui.lineEditEmpresa.clear()
+            self.ui.comboBoxPais.setCurrentIndex(0)
+            self.ui.comboBoxTipo.setCurrentIndex(0)
 
         def cancelar():
             self.window.close()
@@ -345,15 +351,32 @@ class Ui_MainWindow(QMainWindow):
             self.ui.labelProveedorID.setText(rowids)
             print(rowids)
 
-        def actualizar():
+        def eliminar():
             conn = sqlite3.connect('database.db')
             row = self.ui.labelProveedorID.text()
             with conn:
                 c = conn.cursor()
-                c.execute("SELECT * FROM proveedores WHERE rowid= :rowid",
+                c.execute("DELETE FROM proveedores WHERE rowid= :rowid",
                           {'rowid': row})
-                resultado = c.fetchall()
-            print(resultado)
+                conn.commit()
+            filtrar(self.ui.comboBoxFiltro.currentText())
+            print('Hecho')
+
+        def actualizar():
+            conn = sqlite3.connect('database.db')
+            row = self.ui.labelProveedorID.text()
+            nombre = self.ui.lineEditNombre.text()
+            apellido = self.ui.lineEditApellido.text()
+            email = self.ui.lineEditEmail.text()
+            empresa = self.ui.lineEditEmpresa.text()
+            pais = self.ui.comboBoxPais.currentText()
+            tipo = self.ui.comboBoxTipo.currentText()
+            with conn:
+                c = conn.cursor()
+                c.execute("UPDATE proveedores SET nombre=:nombre, apellido=:apellido, email=:email, empresa=:empresa, pais=:pais, destinatarios=:destinatarios WHERE rowid= :rowid", {
+                          'nombre': nombre, 'apellido': apellido, 'email': email, 'empresa': empresa, 'pais': pais, 'destinatarios': tipo, 'rowid': row})
+                conn.commit()
+            filtrar(self.ui.comboBoxFiltro.currentText())
             pass
 
         def cancelar():
@@ -366,6 +389,7 @@ class Ui_MainWindow(QMainWindow):
         self.ui.pushButtonActualizar.clicked.connect(actualizar)
         self.ui.tableWidget.clicked.connect(elegirItem)
         self.ui.pushButtonCancelar.clicked.connect(cancelar)
+        self.ui.pushButtonBorrar.clicked.connect(eliminar)
 
         self.window.show()
 
@@ -429,6 +453,9 @@ class Ui_MainWindow(QMainWindow):
     # def pais(self, text):
     #     self.paisdest = text
 
+    def salir(self):
+        MainWindow.close()
+
 
 if __name__ == "__main__":
     import sys
@@ -444,6 +471,7 @@ if __name__ == "__main__":
     # ui.CuerpocomboBox.activated[str].connect(ui.texto)
     # ui.PaisComboBox.activated[str].connect(ui.pais)
     ui.DestinatariocomboBox.activated[str].connect(ui.destinos)
+    ui.actionSalir.triggered.connect(ui.salir)
     ui.actionProveedor.triggered.connect(ui.ventanaproveedores)
     ui.actionEditarProveedor.triggered.connect(ui.ventanaEditarProv)
     ui.actionOpciones.triggered.connect(ui.ventanaOpciones)

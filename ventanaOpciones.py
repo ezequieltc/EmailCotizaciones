@@ -17,6 +17,10 @@ class Ui_VentanaOpciones(object):
         VentanaOpciones.resize(455, 262)
         VentanaOpciones.setMinimumSize(QtCore.QSize(455, 262))
         VentanaOpciones.setMaximumSize(QtCore.QSize(455, 262))
+        icon = QtGui.QIcon()
+        icon.addPixmap(QtGui.QPixmap("Data/ruhrpumpen.png"),
+                       QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        VentanaOpciones.setWindowIcon(icon)
         self.centralwidget = QtWidgets.QWidget(VentanaOpciones)
         self.centralwidget.setObjectName("centralwidget")
         self.labelEmailUsuario = QtWidgets.QLabel(self.centralwidget)
@@ -49,7 +53,8 @@ class Ui_VentanaOpciones(object):
         self.lineEditPuerto = QtWidgets.QLineEdit(self.centralwidget)
         self.lineEditPuerto.setEnabled(False)
         self.lineEditPuerto.setGeometry(QtCore.QRect(240, 130, 51, 20))
-        self.lineEditPuerto.setInputMethodHints(QtCore.Qt.ImhFormattedNumbersOnly)
+        self.lineEditPuerto.setInputMethodHints(
+            QtCore.Qt.ImhFormattedNumbersOnly)
         self.lineEditPuerto.setObjectName("lineEditPuerto")
         self.checkBoxContrasena = QtWidgets.QCheckBox(self.centralwidget)
         self.checkBoxContrasena.setGeometry(QtCore.QRect(240, 80, 121, 17))
@@ -74,15 +79,21 @@ class Ui_VentanaOpciones(object):
 
     def retranslateUi(self, VentanaOpciones):
         _translate = QtCore.QCoreApplication.translate
-        VentanaOpciones.setWindowTitle(_translate("VentanaOpciones", "Opciones"))
+        VentanaOpciones.setWindowTitle(
+            _translate("VentanaOpciones", "Opciones"))
         self.labelEmailUsuario.setText(_translate("VentanaOpciones", "Email:"))
-        self.labelContrasena.setText(_translate("VentanaOpciones", "Contraseña:"))
+        self.labelContrasena.setText(
+            _translate("VentanaOpciones", "Contraseña:"))
         self.labelServidor.setText(_translate("VentanaOpciones", "Servidor:"))
-        self.checkBoxServidor.setText(_translate("VentanaOpciones", "Elegir el Servidor"))
+        self.checkBoxServidor.setText(_translate(
+            "VentanaOpciones", "Elegir el Servidor"))
         self.labelPuerto.setText(_translate("VentanaOpciones", "Puerto:"))
-        self.checkBoxContrasena.setText(_translate("VentanaOpciones", "Mostrar contraseña"))
-        self.pushButtonGuardar.setText(_translate("VentanaOpciones", "Guardar"))
-        self.pushButtonCancelar.setText(_translate("VentanaOpciones", "Cancelar"))
+        self.checkBoxContrasena.setText(_translate(
+            "VentanaOpciones", "Mostrar contraseña"))
+        self.pushButtonGuardar.setText(
+            _translate("VentanaOpciones", "Guardar"))
+        self.pushButtonCancelar.setText(
+            _translate("VentanaOpciones", "Cancelar"))
 
 
 if __name__ == "__main__":

@@ -17,6 +17,10 @@ class Ui_EditarProveedor(object):
         EditarProveedor.resize(554, 530)
         EditarProveedor.setMinimumSize(QtCore.QSize(554, 530))
         EditarProveedor.setMaximumSize(QtCore.QSize(554, 530))
+        icon = QtGui.QIcon()
+        icon.addPixmap(QtGui.QPixmap("Data/ruhrpumpen.png"),
+                       QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        EditarProveedor.setWindowIcon(icon)
         self.centralwidget = QtWidgets.QWidget(EditarProveedor)
         self.centralwidget.setObjectName("centralwidget")
         self.labelNombre = QtWidgets.QLabel(self.centralwidget)
@@ -68,9 +72,12 @@ class Ui_EditarProveedor(object):
         self.lineEditEmail.setObjectName("lineEditEmail")
         self.tableWidget = QtWidgets.QTableWidget(self.centralwidget)
         self.tableWidget.setGeometry(QtCore.QRect(20, 240, 511, 192))
-        self.tableWidget.setEditTriggers(QtWidgets.QAbstractItemView.NoEditTriggers)
-        self.tableWidget.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectRows)
-        self.tableWidget.setVerticalScrollMode(QtWidgets.QAbstractItemView.ScrollPerPixel)
+        self.tableWidget.setEditTriggers(
+            QtWidgets.QAbstractItemView.NoEditTriggers)
+        self.tableWidget.setSelectionBehavior(
+            QtWidgets.QAbstractItemView.SelectRows)
+        self.tableWidget.setVerticalScrollMode(
+            QtWidgets.QAbstractItemView.ScrollPerPixel)
         self.tableWidget.setObjectName("tableWidget")
         self.tableWidget.setColumnCount(6)
         self.tableWidget.setRowCount(0)
@@ -124,24 +131,36 @@ class Ui_EditarProveedor(object):
 
     def retranslateUi(self, EditarProveedor):
         _translate = QtCore.QCoreApplication.translate
-        EditarProveedor.setWindowTitle(_translate("EditarProveedor", "Editar Proveedor"))
+        EditarProveedor.setWindowTitle(_translate(
+            "EditarProveedor", "Editar Proveedor"))
         self.labelNombre.setText(_translate("EditarProveedor", "Nombre:"))
         self.labelApellido.setText(_translate("EditarProveedor", "Apellido:"))
         self.labelEmail.setText(_translate("EditarProveedor", "Email:"))
         self.labelTipo.setText(_translate("EditarProveedor", "Tipo:"))
         self.labelPais.setText(_translate("EditarProveedor", "Pais:"))
         self.labelFiltrar.setText(_translate("EditarProveedor", "Filtrar:"))
-        self.comboBoxTipo.setItemText(0, _translate("EditarProveedor", "Elija la opcion..."))
-        self.comboBoxTipo.setItemText(1, _translate("EditarProveedor", "Motores"))
-        self.comboBoxTipo.setItemText(2, _translate("EditarProveedor", "Sellos"))
-        self.comboBoxTipo.setItemText(3, _translate("EditarProveedor", "Acoples"))
-        self.comboBoxPais.setItemText(0, _translate("EditarProveedor", "Elija el pais..."))
-        self.comboBoxPais.setItemText(1, _translate("EditarProveedor", "Argentina"))
-        self.comboBoxPais.setItemText(2, _translate("EditarProveedor", "Mexico"))
-        self.comboBoxFiltro.setItemText(0, _translate("EditarProveedor", "Elija la opcion:"))
-        self.comboBoxFiltro.setItemText(1, _translate("EditarProveedor", "Motores"))
-        self.comboBoxFiltro.setItemText(2, _translate("EditarProveedor", "Sellos"))
-        self.comboBoxFiltro.setItemText(3, _translate("EditarProveedor", "Acoples"))
+        self.comboBoxTipo.setItemText(0, _translate(
+            "EditarProveedor", "Elija la opcion..."))
+        self.comboBoxTipo.setItemText(
+            1, _translate("EditarProveedor", "Motores"))
+        self.comboBoxTipo.setItemText(
+            2, _translate("EditarProveedor", "Sellos"))
+        self.comboBoxTipo.setItemText(
+            3, _translate("EditarProveedor", "Acoples"))
+        self.comboBoxPais.setItemText(0, _translate(
+            "EditarProveedor", "Elija el pais..."))
+        self.comboBoxPais.setItemText(
+            1, _translate("EditarProveedor", "Argentina"))
+        self.comboBoxPais.setItemText(
+            2, _translate("EditarProveedor", "Mexico"))
+        self.comboBoxFiltro.setItemText(0, _translate(
+            "EditarProveedor", "Elija la opcion:"))
+        self.comboBoxFiltro.setItemText(
+            1, _translate("EditarProveedor", "Motores"))
+        self.comboBoxFiltro.setItemText(
+            2, _translate("EditarProveedor", "Sellos"))
+        self.comboBoxFiltro.setItemText(
+            3, _translate("EditarProveedor", "Acoples"))
         self.tableWidget.setSortingEnabled(True)
         item = self.tableWidget.horizontalHeaderItem(0)
         item.setText(_translate("EditarProveedor", "Nombre"))
@@ -155,9 +174,11 @@ class Ui_EditarProveedor(object):
         item.setText(_translate("EditarProveedor", "Pais"))
         item = self.tableWidget.horizontalHeaderItem(5)
         item.setText(_translate("EditarProveedor", "Tipo"))
-        self.pushButtonActualizar.setText(_translate("EditarProveedor", "Actualizar"))
+        self.pushButtonActualizar.setText(
+            _translate("EditarProveedor", "Actualizar"))
         self.pushButtonBorrar.setText(_translate("EditarProveedor", "Borrar"))
-        self.pushButtonCancelar.setText(_translate("EditarProveedor", "Cancelar"))
+        self.pushButtonCancelar.setText(
+            _translate("EditarProveedor", "Cancelar"))
         self.labelEmpresa.setText(_translate("EditarProveedor", "Empresa:"))
         self.labelProveedorIDName.setText(_translate("EditarProveedor", "ID:"))
 
